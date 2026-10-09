@@ -28,3 +28,20 @@ pytest
 The schema module defines typed records for a pre-decision request, a logged bandit event, and an **evaluation-only** oracle result. The oracle is deliberately kept separate from observed logs; later benchmark code must not feed it into an estimator or reward-model training.
 
 The M0 schema uses single-action contextual bandits. Slates and richer candidate metadata are deferred to the slate milestone.
+
+## M1: Synthetic contextual-bandit data
+
+```python
+from opebenchlab.synthetic import SyntheticConfig, make_dataset
+
+data = make_dataset(SyntheticConfig(n_requests=1000, seed=42))
+print(data.requests[0])
+print(data.events[0])
+```
+
+`SyntheticWorld` holds the hidden click mechanism; `generate_requests` creates
+pre-action features; `log_interactions` samples actions and clicks while recording
+exact action propensities. `oracle_policy_value` computes the exact **conditional**
+expected policy reward over the generated request set, not the population value.
+Keep oracle outputs out of estimators and training. This milestone supports
+single-item actions only; top-K slates arrive later.
