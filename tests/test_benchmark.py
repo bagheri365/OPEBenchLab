@@ -42,3 +42,23 @@ def test_summary_matches_errors():
 def test_empty_summary():
     with pytest.raises(ValueError):
         summarize(())
+
+
+def test_point_estimates_without_bootstrap():
+    from math import isnan
+    config = BenchmarkConfig(n_trials=2, n_requests=30, n_bootstrap=0, seed=3)
+    results = run_benchmark(config)
+    assert len(results) == 10
+    assert all(isnan(r.ci_lower) and isnan(r.ci_upper) for r in results)
+    assert all(isnan(s.ci_coverage) for s in summarize(results))
+
+def test_progress_callback_reports_completed_trials():
+    config = BenchmarkConfig(n_trials=3, n_requests=30, n_bootstrap=0)
+    seen = []
+    run_benchmark(config, progress=lambda done, total: seen.append((done, total)))
+    assert seen == [(1, 3), (2, 3), (3, 3)]
+
+def test_single_bootstrap_draw_rejected():
+    import pytest
+    with pytest.raises(ValueError):
+        BenchmarkConfig(n_bootstrap=1)

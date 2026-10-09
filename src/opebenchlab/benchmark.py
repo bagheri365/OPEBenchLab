@@ -5,6 +5,7 @@ Bootstrap intervals are descriptive percentile intervals, not guaranteed-valid C
 """
 from dataclasses import dataclass
 from math import isfinite
+from typing import Callable
 
 import numpy as np
 
@@ -26,8 +27,8 @@ class BenchmarkConfig:
     switch_threshold: float = 10.0
 
     def __post_init__(self):
-        if self.n_trials < 2 or self.n_requests < 1 or self.n_bootstrap < 2:
-            raise ValueError("need >=2 trials, >=1 request and >=2 bootstrap draws")
+        if self.n_trials < 2 or self.n_requests < 1 or self.n_bootstrap == 1 or self.n_bootstrap < 0:
+            raise ValueError("need >=2 trials, >=1 request and either 0 or >=2 bootstrap draws")
         if not 0 < self.confidence < 1:
             raise ValueError("confidence must be between zero and one")
         if not isfinite(self.exploration) or not 0 < self.exploration <= 1:
@@ -107,7 +108,10 @@ def _bootstrap_interval(data, target, name, threshold, rng, draws, confidence):
     return tuple(float(v) for v in np.quantile(values, [alpha, 1 - alpha]))
 
 
-def run_benchmark(config: BenchmarkConfig) -> tuple[TrialResult, ...]:
+def run_benchmark(
+    config: BenchmarkConfig,
+    progress: Callable[[int, int], None] | None = None,
+) -> tuple[TrialResult, ...]:
     """Vary logged samples and rewards; score against per-trial conditional truth.
 
     The environment seed stays fixed across trials, while request and logging
@@ -128,12 +132,17 @@ def run_benchmark(config: BenchmarkConfig) -> tuple[TrialResult, ...]:
         rng = np.random.default_rng(sim.seed + 3)
         for name in names:
             estimate = _estimate(data, uniform_probabilities, name, config.switch_threshold)
-            lo, hi = _bootstrap_interval(data, uniform_probabilities, name,
-                                         config.switch_threshold, rng,
-                                         config.n_bootstrap, config.confidence)
+            if config.n_bootstrap == 0:
+                lo, hi = float("nan"), float("nan")
+            else:
+                lo, hi = _bootstrap_interval(data, uniform_probabilities, name,
+                                             config.switch_threshold, rng,
+                                             config.n_bootstrap, config.confidence)
             results.append(TrialResult(trial, name, estimate.value, truth,
                                        estimate.effective_sample_size, estimate.max_weight,
                                        lo, hi))
+        if progress is not None:
+            progress(trial + 1, config.n_trials)
     return tuple(results)
 
 
