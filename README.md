@@ -55,3 +55,15 @@ benchmarks. Run one with `python -m opebenchlab.m60_benchmark run m512-support
 provenance manifest alongside the original CSVs. See
 [the M6.0 reproducibility guide](docs/m60_reproducibility.md) for the full
 benchmark command, optional plotting, and interpretation caveats.
+
+### M6.1: Offline reporting and uncertainty audit
+
+After running `m60_benchmark run m512-support`, generate verified coverage and
+paired-bootstrap summaries without rerunning the experiment:
+
+```bash
+python -m opebenchlab.m61_report --input-dir reports/m60_support \
+  --output-dir reports/m61_support --bootstrap 2000 --seed 42
+```
+
+See [M6.1 reporting protocol](docs/m61_reporting.md) for interpretation and limitations.
