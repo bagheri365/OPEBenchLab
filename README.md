@@ -75,3 +75,10 @@ Run `python -m opebenchlab.m62_robustness --help` and see
 support, and additive-negative-control suites. Interval calibration and a truly
 misspecified interaction mechanism are explicitly deferred rather than inferred
 from unsupported output fields.
+
+### M6.3 contextual DR diagnostic decomposition
+
+Use `python -m opebenchlab.m63_diagnostics --help` to run a paired additive vs.
+contextual-interaction analysis of direct-model error, importance-weighted
+correction, their cross term, and target/logged prediction error. See
+[`docs/m63_diagnostics.md`](docs/m63_diagnostics.md) for interpretation limits.
