@@ -45,3 +45,13 @@ exact action propensities. `oracle_policy_value` computes the exact **conditiona
 expected policy reward over the generated request set, not the population value.
 Keep oracle outputs out of estimators and training. This milestone supports
 single-item actions only; top-K slates arrive later.
+
+## M6.0: Unified reproducibility wrapper
+
+Use `python -m opebenchlab.m60_benchmark list` to see supported modern slate
+benchmarks. Run one with `python -m opebenchlab.m60_benchmark run m512-support
+--output-dir reports/m60_example --trials 1 --requests 500 --explorations 0.2
+--ridges 0.1`. This leaves the original estimator code unchanged and writes a
+provenance manifest alongside the original CSVs. See
+[the M6.0 reproducibility guide](docs/m60_reproducibility.md) for the full
+benchmark command, optional plotting, and interpretation caveats.
