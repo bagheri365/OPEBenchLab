@@ -92,3 +92,7 @@ Run `python -m opebenchlab.m64_risk --output-dir reports/m64_risk` to audit obse
 Use `python -m opebenchlab.m65_calibration --output-dir reports/m65_calibration`.
 The protocol, frozen rules, held-out trial decisions and cluster-bootstrap summaries
 are documented in `docs/m65_calibration.md`.
+
+### M7.0 — Research synthesis
+
+See [research draft](docs/m70_research_draft.md), [numerical evidence ledger](docs/m70_evidence.md), and [reproducibility/audit guide](docs/m70_reproducibility.md). The synthesis distinguishes directly checked M6.3–M6.5 outputs from earlier milestone summaries that still require archived outputs for a full independent audit.
