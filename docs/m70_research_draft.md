@@ -22,7 +22,7 @@ The repository implements a synthetic contextual recommendation environment, exa
 
 ### 4.1 Support and reward structure
 
-Earlier slate experiments document exact-match support collapse as slate size and candidate count increase. Position-wise and pairwise structural estimators can trade modeling assumptions for lower effective variance; they do not automatically handle arbitrary context-dependent interactions. M6.2 stress-test numbers should be independently checked against its output archive before publication.
+Earlier slate experiments document exact-match support collapse as slate size and candidate count increase. Position-wise and pairwise structural estimators can trade modeling assumptions for lower effective variance; they do not automatically handle arbitrary context-dependent interactions. The recovered M6.2 outputs verify SNIPS finite-estimate coverage falling from 100% to 40% as slate support is stressed (5 candidates, K=2 versus 7 candidates, K=3; 500 requests, exploration 1.0). Support-aware fallback remains finite but incurs greater error in the lowest-support configuration.
 
 ### 4.2 DR bias and residual correction
 
@@ -40,7 +40,7 @@ Support and reward-model generalization interact: a model may fit logged observa
 
 ## 6. Limitations
 
-All findings come from synthetic mechanisms, not real-world randomized recommendation logs. Some reported SNIPS RMSE values condition on the estimator being defined, creating a coverage-versus-accuracy tradeoff. The target prediction RMSE and actual OPE error are oracle-only diagnostics. M6.4 thresholds were chosen retrospectively; M6.5 warning and outcome cutoffs are simulation-calibrated and do not yield universal deployment thresholds. The M6.5 default has only three held-out seeds, making seed-cluster uncertainty intervals unstable. Actual held-out alert fractions differ across rules, precluding strong fixed-budget claims. The M6.2 and M6.1 output archives were not included in the M7.0 source input and remain pending independent verification.
+All findings come from synthetic mechanisms, not real-world randomized recommendation logs. Some reported SNIPS RMSE values condition on the estimator being defined, creating a coverage-versus-accuracy tradeoff. The target prediction RMSE and actual OPE error are oracle-only diagnostics. M6.4 thresholds were chosen retrospectively; M6.5 warning and outcome cutoffs are simulation-calibrated and do not yield universal deployment thresholds. The M6.5 default has only three held-out seeds, making seed-cluster uncertainty intervals unstable. Actual held-out alert fractions differ across rules, precluding strong fixed-budget claims. The M6.1 and M6.2 output archives were recovered and re-audited in M7.1; source files and figure generation are described in `m71_figures.md`. Their bootstrap comparisons remain unadjusted for multiple testing, and M6.2 does not supply usable interval-coverage evidence.
 
 ## 7. Conclusion
 

@@ -1,6 +1,35 @@
 # M7.0 — Evidence ledger
 
-Numbers in this ledger were checked against the uploaded M6.3, M6.4 and M6.5 CSV archives. These archives are **not** included in the Git source ZIP; see `m70_reproducibility.md` for verification and regeneration. Results from earlier milestones are explicitly marked as historical summaries, not independently re-audited here.
+M6.1–M6.2 results were subsequently checked against the recovered `reports.zip` archive in M7.1; M6.3–M6.5 were checked against their milestone archives. The experiment CSVs are **not** included in the Git source ZIP. See `m71_figures.md` for source paths, figure regeneration, and SHA-256 manifest generation.
+
+## M6.1: paired comparisons and finite-estimate coverage (re-audited M7.1)
+
+Source files: `reports/m61_support/coverage.csv` and `reports/m61_support/paired_bootstrap.csv`.
+
+- SNIPS: 359/360 finite estimates; support-aware: 360/360.
+- At exploration 1.0, the mean DR minus SNIPS squared-error difference is +0.006750 at 500 requests (29 finite pairs; bootstrap 95% CI [+0.002338, +0.012393]) and +0.000846 at 2,000 requests (30 finite pairs; CI [+0.000417, +0.001326]). Both favor SNIPS.
+- Only 2/12 unadjusted paired intervals exclude zero; these do not establish multiplicity-adjusted significance.
+
+## M6.2: replication and stress tests (re-audited M7.1)
+
+Source files: `reports/m62_replication/robustness_summary.csv`, `reports/m62_support/robustness_summary.csv`, and `reports/m62_mechanism/robustness_summary.csv`.
+
+| Suite | Setting (exploration 1.0) | SNIPS conditional RMSE | Contextual DR RMSE | SNIPS coverage |
+|---|---|---:|---:|---:|
+| Replication | n=500 | 0.03620 | 0.09506 | 93.3% |
+| Replication | n=2000 | 0.01777 | 0.03557 | 100% |
+| Replication | n=10000 | 0.00735 | 0.00656 | 100% |
+| Mechanism: additive | n=500 | 0.03617 | 0.03186 | 91.7% |
+| Mechanism: contextual-pairwise | n=500 | 0.03617 | 0.09749 | 91.7% |
+
+| Support stress (n=500, exploration 1.0) | Mean test ESS | SNIPS coverage | SNIPS conditional RMSE | Support-aware RMSE |
+|---|---:|---:|---:|---:|
+| 5 candidates, K=2 | 8.30 | 100% | 0.02495 | 0.02495 |
+| 5 candidates, K=3 | 2.85 | 95% | 0.04251 | 0.05786 |
+| 5 candidates, K=4 | 1.55 | 70% | 0.04842 | 0.09584 |
+| 7 candidates, K=3 | 0.80 | 40% | 0.05370 | 0.14751 |
+
+Replication has 90 trials per configuration; support stress has 20 trials per configuration. RMSE for SNIPS conditions on finite estimates. The M6.2 interval-coverage outputs have zero computed intervals where evaluation influence standard errors are unavailable, and cannot support coverage claims.
 
 ## M6.3: reward-model generalization and DR decomposition
 
@@ -42,8 +71,7 @@ Pooled rates are computed from integer counts, not averages of configuration-lev
 
 ## Evidence boundaries
 
-- M6.2 replication, support-stress and negative-control figures are recorded in earlier discussions, but the original M6.2 result archive was not supplied with this M7.0 input; treat those figures as **not reverified here**.
-- M6.1 paired bootstrap findings likewise require the original M6.1 report archive for independent reproduction.
+- The original M6.1 and M6.2 CSV outputs have now been independently re-audited from `reports.zip`; see `m71_figures.md` for regeneration and source-file hashing.
 - Simulator truth is available only for retrospective validation, not deployment-time warning computation.
 - Three held-out seed clusters per configuration are insufficient for precise seed-level uncertainty quantification.
-- None of these studies demonstrates performance on production randomized recommendation logs.
+- These studies do not establish performance on production randomized recommendation logs.

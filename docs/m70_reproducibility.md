@@ -58,3 +58,7 @@ The Git source ZIP contains implementation and protocol documentation but **does
 ## Release checklist
 
 Before submitting a paper, rerun or retrieve M6.1 and M6.2 output archives, increase independent held-out seeds, freeze a tagged source revision, and generate figures directly from versioned output tables. This milestone intentionally does not manufacture missing experiment files or assert results for unaudited outputs.
+
+## M7.1 source audit and figures
+
+The M6.1 and M6.2 outputs were recovered from `reports.zip`. See [`m71_figures.md`](m71_figures.md) for the CSV paths, optional matplotlib dependency, plotting CLI, and hash manifest. The original M7.0 pending-audit caveat is resolved for these archives; independent seed replication and publication-grade uncertainty remain future work.

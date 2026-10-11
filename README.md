@@ -96,3 +96,7 @@ are documented in `docs/m65_calibration.md`.
 ### M7.0 — Research synthesis
 
 See [research draft](docs/m70_research_draft.md), [numerical evidence ledger](docs/m70_evidence.md), and [reproducibility/audit guide](docs/m70_reproducibility.md). The synthesis distinguishes directly checked M6.3–M6.5 outputs from earlier milestone summaries that still require archived outputs for a full independent audit.
+
+### M7.1 — Audited publication figures
+
+The recovered M6.1–M6.2 archives close the evidence gap noted in M7.0. See [M7.1 figures and provenance](docs/m71_figures.md). After extracting the experiment archive into `reports/`, install `matplotlib` and run `python -m opebenchlab.m71_figures --reports-dir reports --output-dir reports/m71_figures` to generate four figures plus a SHA-256 source manifest.
