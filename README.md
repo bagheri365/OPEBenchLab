@@ -67,3 +67,11 @@ python -m opebenchlab.m61_report --input-dir reports/m60_support \
 ```
 
 See [M6.1 reporting protocol](docs/m61_reporting.md) for interpretation and limitations.
+
+### M6.2 staged robustness protocol
+
+Run `python -m opebenchlab.m62_robustness --help` and see
+[`docs/m62_robustness.md`](docs/m62_robustness.md) for the predefined replication,
+support, and additive-negative-control suites. Interval calibration and a truly
+misspecified interaction mechanism are explicitly deferred rather than inferred
+from unsupported output fields.
