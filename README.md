@@ -86,3 +86,9 @@ correction, their cross term, and target/logged prediction error. See
 ### M6.4 — Observable model-risk diagnostics
 
 Run `python -m opebenchlab.m64_risk --output-dir reports/m64_risk` to audit observable target-distribution warning signals against oracle-only DR errors. See [M6.4 protocol](docs/m64_risk.md). This is a retrospective diagnostic study, not a calibrated deployment alarm.
+
+### M6.5 — held-out risk warning calibration
+
+Use `python -m opebenchlab.m65_calibration --output-dir reports/m65_calibration`.
+The protocol, frozen rules, held-out trial decisions and cluster-bootstrap summaries
+are documented in `docs/m65_calibration.md`.
