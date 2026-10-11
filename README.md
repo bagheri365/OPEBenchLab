@@ -82,3 +82,7 @@ Use `python -m opebenchlab.m63_diagnostics --help` to run a paired additive vs.
 contextual-interaction analysis of direct-model error, importance-weighted
 correction, their cross term, and target/logged prediction error. See
 [`docs/m63_diagnostics.md`](docs/m63_diagnostics.md) for interpretation limits.
+
+### M6.4 — Observable model-risk diagnostics
+
+Run `python -m opebenchlab.m64_risk --output-dir reports/m64_risk` to audit observable target-distribution warning signals against oracle-only DR errors. See [M6.4 protocol](docs/m64_risk.md). This is a retrospective diagnostic study, not a calibrated deployment alarm.
