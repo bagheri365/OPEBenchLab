@@ -1,6 +1,6 @@
 # Slate Off-Policy Evaluation Under Support and Reward-Model Shift: A Synthetic Benchmark Study
 
-**Status:** Audited pre-submission research draft (M7.3); not peer-reviewed or externally validated.
+**Status:** v1.0.0 accompanying research draft; not peer-reviewed or externally validated. The open M8.0 inference issues are documented in `m81_release_audit.md`.
 
 ## Abstract
 
@@ -42,7 +42,7 @@ Support and reward-model generalization interact: a model may fit logged observa
 
 ## 6. Limitations
 
-All findings come from synthetic mechanisms, not real-world randomized recommendation logs. Some reported SNIPS RMSE values condition on the estimator being defined, creating a coverage-versus-accuracy tradeoff. The target prediction RMSE and actual OPE error are oracle-only diagnostics. M6.4 thresholds were chosen retrospectively; M6.5 warning and outcome cutoffs are simulation-calibrated and do not yield universal deployment thresholds. M6.5 initially used three held-out seeds; M7.2 extended replication uses twelve independent held-out seeds, which improves but does not eliminate uncertainty. Frozen-threshold alert fractions differ across rules; M7.2 additionally compares rankings at matched alert budgets. Its ranking analysis is retrospective and not a prospective deployment rule. The 36 paired intervals are not multiplicity-adjusted. The M6.1 and M6.2 output archives were recovered and re-audited in M7.1; source files and figure generation are described in `m71_figures.md`. Their bootstrap comparisons remain unadjusted for multiple testing, and M6.2 does not supply usable interval-coverage evidence.
+All findings come from synthetic mechanisms, not real-world randomized recommendation logs. Some reported SNIPS RMSE values condition on the estimator being defined, creating a coverage-versus-accuracy tradeoff. The target prediction RMSE and actual OPE error are oracle-only diagnostics. M6.4 thresholds were chosen retrospectively; M6.5 warning and outcome cutoffs are simulation-calibrated and do not yield universal deployment thresholds. M6.5 initially used three held-out seeds; M7.2 extended replication uses twelve independent held-out seeds, which improves but does not eliminate uncertainty. Frozen-threshold alert fractions differ across rules; M7.2 additionally compares rankings at matched alert budgets. Its ranking analysis is retrospective and not a prospective deployment rule. The 36 paired intervals are not multiplicity-adjusted. Moreover, these seed-cluster intervals condition on the original matched-budget alert rankings; they do not repeat ranking inside each bootstrap draw. Pooled precision values are descriptive, with no joint-seed interval accounting for dependence across mechanisms and configurations. The M6.1 and M6.2 output archives were recovered and re-audited in M7.1; source files and figure generation are described in `m71_figures.md`. Their bootstrap comparisons remain unadjusted for multiple testing, and M6.2 does not supply usable interval-coverage evidence.
 
 ## 7. Conclusion
 

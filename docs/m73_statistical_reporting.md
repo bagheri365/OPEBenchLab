@@ -27,3 +27,7 @@ SNIPS RMSE from prior milestones is conditional on the estimator being finite; r
 ## Claims supported by the extended results
 
 Across 4,320 unique within-mechanism held-out trials, 1,080 alerts per warning at matched 25% budget yield 307 ESS, 298 validation, and 287 combined true positives. Thus pooled precision is 28.43%, 27.59%, and 26.57%, respectively. At 500 requests and exploration 1.0, the contextual-pairwise regime favors ESS over validation and combined in unadjusted paired seed-cluster intervals. The additive regime reverses the relative usefulness of ESS and validation RMSE. This mechanism dependence is a descriptive finding of this simulator family, not evidence of general transferability.
+
+## M8.0 audit qualification (v1.0.0)
+
+The paired seed-cluster bootstrap **resamples fixed alert decisions** from the original held-out ranking. It does not re-rank within each bootstrap sample; its intervals are conditional on the original selection. Across mechanisms and configurations, common random seeds and matched synthetic observations induce dependence, so pooled counts are descriptive and no pooled joint-seed interval is available. These issues remain open for any later submission; see [`m81_release_audit.md`](m81_release_audit.md).

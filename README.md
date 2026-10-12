@@ -1,3 +1,7 @@
+## v1.0.0 research release
+
+OPEBenchLab v1.0.0 is a **synthetic research software release**, not a production-ready OPE validator or a peer-reviewed research result. Start with the [release checklist](docs/m81_release_checklist.md), [changelog](CHANGELOG.md), and [M8.1 audit limitations](docs/m81_release_audit.md). The M7.2 confidence intervals condition on the originally selected alert sets; pooled uncertainty does not account for shared seeds across configurations. These open statistical issues are **documented, not fixed** in v1.0.0.
+
 # OPEBenchLab
 
 A reproducible learning and benchmarking project for **off-policy evaluation (OPE)** in recommender systems.
