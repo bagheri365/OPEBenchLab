@@ -104,3 +104,7 @@ The recovered M6.1–M6.2 archives close the evidence gap noted in M7.0. See [M7
 ### M7.2 — Paired statistical validation of held-out warnings
 
 Run `python -m opebenchlab.m72_validation --input-dir reports/m65_calibration --output-dir reports/m72_validation` for frozen-threshold versus matched-alert-budget warning comparisons and paired seed-cluster intervals. See [M7.2 protocol](docs/m72_validation.md). Increase independent replication by rerunning M6.5 with additional disjoint seeds first.
+
+### M7.3 — Manuscript statistical reporting
+
+See [statistical reporting appendix](docs/m73_statistical_reporting.md). Run `python -m opebenchlab.m73_manuscript --input-dir reports/m72_extended --output-dir reports/m73_manuscript` to reproduce the mechanism-reversal figure, pooled-count table and SHA-256 evidence manifest.

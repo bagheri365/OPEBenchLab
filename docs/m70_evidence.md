@@ -75,3 +75,19 @@ Pooled rates are computed from integer counts, not averages of configuration-lev
 - Simulator truth is available only for retrospective validation, not deployment-time warning computation.
 - Three held-out seed clusters per configuration are insufficient for precise seed-level uncertainty quantification.
 - These studies do not establish performance on production randomized recommendation logs.
+
+## M7.2: extended independent-seed validation (M7.3 audit)
+
+Sources: `reports/m72_extended/warning_summary.csv`, `reports/m72_extended/paired_precision.csv`, with calibration and held-out decisions in `reports/m65_extended/`. Eight calibration and twelve disjoint held-out seeds; 30 trials per seed and configuration. Transfer reuses additive trials and is not independent replication.
+
+| Within-mechanism, matched 25% budget | Alerts | True positives | Precision |
+|---|---:|---:|---:|
+| ESS | 1,080 | 307 | 28.43% |
+| Logged validation RMSE | 1,080 | 298 | 27.59% |
+| Combined | 1,080 | 287 | 26.57% |
+
+Across 4,320 unique within-mechanism trials, the high-error prevalence is 27.80%. The pooled combined-minus-ESS precision difference is −1.85 percentage points; this pooled contrast is descriptive, not a cluster-bootstrap confidence interval.
+
+At n=500 and exploration 1.0 under contextual-pairwise rewards, paired seed-cluster bootstrap 95% intervals for precision difference versus ESS: validation −28.89 pp [−41.11, −17.78] and combined −23.33 pp [−34.59, −11.64]. Under additive rewards at the same setting, ESS precision is 5.6% versus 32.2% for validation; under contextual pairwise rewards, ESS precision is 65.6% versus 36.7% for validation. The direction of the preferred warning changes with the reward mechanism.
+
+**Cautions:** 12 seed clusters; 2,000 bootstrap draws; 36 paired comparisons without multiplicity correction; calibration-defined high-error outcomes are simulator-specific; matched-budget decisions use observable held-out risk scores for ranking but not held-out outcome labels; cross-mechanism frozen thresholds may issue no alerts. No general deployment-time guarantee follows.
