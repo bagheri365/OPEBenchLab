@@ -1,114 +1,209 @@
-## v1.0.0 research release
-
-OPEBenchLab v1.0.0 is a **synthetic research software release**, not a production-ready OPE validator or a peer-reviewed research result. Start with the [release checklist](docs/m81_release_checklist.md), [changelog](CHANGELOG.md), and [M8.1 audit limitations](docs/m81_release_audit.md). The M7.2 confidence intervals condition on the originally selected alert sets; pooled uncertainty does not account for shared seeds across configurations. These open statistical issues are **documented, not fixed** in v1.0.0.
-
 # OPEBenchLab
 
-A reproducible learning and benchmarking project for **off-policy evaluation (OPE)** in recommender systems.
+**When can off-policy estimates of recommendation slates be trusted?**
 
-## Research question
+OPEBenchLab is a controlled synthetic research project for studying off-policy evaluation (OPE) of contextual recommendations and ordered top-K slates. It separates the effects of logging-policy support, reward-model generalization, slate interactions, and estimator uncertainty.
 
-When can logged recommendation data reliably identify a better policy, and when do poor overlap, model misspecification, leakage, and ranking interactions make offline estimates misleading?
+The project rule is simple:
 
-## Roadmap
+> Measure overlap, estimation error, and finite-estimate coverage separately — and preserve negative findings alongside successful results.
 
-- **M0 (this patch):** repository scaffold, data contracts, oracle isolation rules, and schema tests.
-- **M1:** synthetic contextual-bandit generator, stochastic logging, and independent oracle policy values.
-- **M2:** IPS, SNIPS, DM, DR, Switch-DR, and estimator tests.
-- **M3:** Monte Carlo experiments, bias/variance/RMSE, confidence intervals, overlap, and ESS.
-- **M4:** ML validity, point-in-time features, cross-fitting, and leakage stress tests.
-- **M5:** top-K slate logging and evaluation under position and interaction effects.
-- **M6:** real randomized logs, reporting, and policy-selection case studies.
+## At a Glance
 
-## Setup
+- **Research question:** when do importance weighting, direct modeling, and doubly robust estimation succeed or fail for recommendation slates?
+- **Current release:** `v1.0.0` — completed synthetic research software, not a production OPE validator or peer-reviewed result
+- **Estimators:** IPS, SNIPS, DM, DR, Switch-DR, and slate-specific structured variants
+- **Main pattern:** a reward model can predict logged slates well but generalize poorly to target-policy slates
+- **Important exception:** SNIPS can outperform contextual DR under sparse exact-slate overlap, but may be undefined when no target slates match
+- **Diagnostic finding:** the preferred risk-warning signal reverses between additive and contextual-pairwise reward mechanisms
+- **Inference boundary:** M7.2 intervals condition on fixed alert selections; pooled results do not have joint-seed uncertainty intervals
+
+Numerical source: [evidence ledger](docs/m70_evidence.md). Statistical scope: [release audit](docs/m81_release_audit.md).
+
+## Why This Project Exists
+
+A new recommendation policy is often evaluated using interactions logged under a different policy. For ordered slates, exact target-policy actions can be rare, and a seemingly accurate reward model may extrapolate poorly to the actions that matter.
+
+OPEBenchLab asks:
+
+> When does additional modeling improve off-policy estimates, and when does it create new failure modes?
+
+The experiments vary sample size, logging exploration, slate support, and synthetic reward structure while keeping oracle policy values separate from observed logs.
+
+## Key Findings
+
+### Sparse support can favor simpler estimators
+
+M6.2 replication results for the contextual-pairwise slate setting at exploration `1.0`:
+
+| Requests | SNIPS RMSE (finite trials only) | Contextual DR RMSE | SNIPS finite coverage |
+|---:|---:|---:|---:|
+| 500 | 0.03620 | 0.09506 | 93.3% |
+| 2,000 | 0.01777 | 0.03557 | 100% |
+| 10,000 | 0.00735 | 0.00656 | 100% |
+
+**Interpretation:** SNIPS performs better on the finite subset at smaller sample sizes, but its RMSE cannot be interpreted without coverage. At 10,000 requests, contextual DR is slightly better in this setting. These are simulator-specific comparisons, not universal estimator rankings.
+
+### Logged-data fit is not target-policy generalization
+
+In the M6.3 contextual-pairwise diagnostic at 500 requests and exploration `1.0`, target-policy prediction RMSE was **0.1697**, versus **0.0435** on logged slates. The corresponding contextual DR RMSE was **0.0975**. Under the matched additive mechanism, target-policy prediction RMSE was **0.0147** and DR RMSE was **0.0319**.
+
+The DR error decomposes into direct-model error and its importance-weighted correction. This helps explain the observed failures in the controlled simulator; it does not prove that the same mechanism dominates in other environments.
+
+### More complicated warning scores do not consistently win
+
+M7.2's extended held-out validation compared warning scores at a matched **25% alert budget**. At 500 requests and exploration `1.0`:
+
+| Reward mechanism | ESS warning precision | Logged-validation-RMSE warning precision |
+|---|---:|---:|
+| Contextual pairwise | 65.6% | 36.7% |
+| Additive | 5.6% | 32.2% |
+
+Across 4,320 unique within-mechanism held-out trials, pooled matched-budget precision was **28.43%** for ESS, **27.59%** for logged validation RMSE, and **26.57%** for their combined score. The pooled values are descriptive. The mechanism reversal is a warning against assuming that a single diagnostic transfers reliably.
+
+See [M7.2 validation](docs/m72_validation.md) and [M7.3 statistical reporting](docs/m73_statistical_reporting.md) for the exact protocol and caveats.
+
+## Benchmark
+
+The benchmark develops from contextual bandits to ordered top-K slates, with exact logging propensities, synthetic oracle values, and controlled additive or contextual-pairwise reward mechanisms.
+
+It studies:
+
+- overlap, effective sample size (ESS), and zero-match events;
+- IPS, SNIPS, DM, DR, Switch-DR, and structured slate estimators;
+- cross-fitted ridge reward models and target-policy prediction error;
+- replication, support stress, and reward-mechanism comparisons;
+- retrospective risk signals, frozen calibration, and held-out warning ranking.
+
+Oracle values are used to score estimators and retrospective diagnostics, **not** as estimator inputs or deployable warning labels.
+
+## Research Evolution
+
+> contextual bandits → ordered slates → reward-model diagnostics → calibrated warnings → statistical audit
+
+| Phase | Research question | Main result | Disposition |
+|---|---|---|---|
+| M0–M3 | Can the OPE data contracts and baseline estimators be tested? | Synthetic bandit generator and baseline OPE methods | Retain |
+| M4–M5.8 | What changes with learned models and slate interactions? | Exact slate support collapses; contextual pair features matter | Retain |
+| M5.9–M5.12 | Does contextual DR or adaptive selection improve reliability? | SNIPS often remains competitive; zero-match fallback restores finite coverage at a cost | Retain with caveats |
+| M6.0–M6.3 | Can failures be reproduced and explained? | Reproducible reports, support stress, and DR error decomposition | Retain |
+| M6.4–M6.5 | Can observable diagnostics warn of large errors? | Warning precision is regime-dependent; calibration does not guarantee transfer | Retain as research diagnostics |
+| M7.0–M7.3 | Do the evidence and statistical comparisons hold together? | Audited ledger, figures, extended held-out analysis, and manuscript appendix | Retain with inferential qualifications |
+| M8.0–M8.1 | What is defensible at release? | Explicit statistical audit and bounded v1.0.0 research-software scope | Release |
+
+Detailed milestone commands and protocols live in [`docs/`](docs/) and the [changelog](CHANGELOG.md).
+
+## Negative and Inconclusive Results
+
+OPEBenchLab retains results that argue *against* a universal improvement story:
+
+- **Adaptive clipping and ESS-only selection (M5.10):** can choose badly under reward-model extrapolation error.
+- **Conservative estimator selection (M5.11):** overwhelmingly selects SNIPS and does not establish a general-purpose DR advantage.
+- **Support-aware fallback (M5.12):** produces finite estimates on zero-match trials, but does not preserve SNIPS's conditional RMSE advantage automatically.
+- **Risk warning calibration (M6.5–M7.2):** combined warning scores do not consistently outperform ESS; transferring frozen thresholds between mechanisms can yield almost no alerts.
+
+These are genuine negative or inconclusive findings in the studied simulator, not evidence that the corresponding methods always fail.
+
+## Evaluation Protocol
+
+The simulator separates observed logged outcomes from evaluation-only oracle truth. Modern experiments use reproducible seed schedules, paired mechanisms where specified, and independent calibration and held-out seeds for warning studies.
+
+M7.2's matched-budget warning comparison ranks held-out **observable scores** within each configuration; it does not use held-out oracle errors to choose alerts. This is a *transductive ranking evaluation*, not a frozen deployment rule. The 12 held-out seed clusters support exploratory paired analysis, not thousands of independent inferential replicates.
+
+The published seed-cluster bootstrap intervals resample **fixed original alert decisions**, without re-ranking within each resample. Shared seeds across configurations are also not modeled by a pooled joint-seed bootstrap. Both limitations remain open for a later paper; see the [M8.1 release audit](docs/m81_release_audit.md).
+
+## Reproducibility
+
+Install Python 3.11 or newer and the development dependencies:
 
 ```bash
 python -m pip install -e '.[dev]'
-pytest
+python -m pytest -q
 ```
 
-## Data contracts
-
-The schema module defines typed records for a pre-decision request, a logged bandit event, and an **evaluation-only** oracle result. The oracle is deliberately kept separate from observed logs; later benchmark code must not feed it into an estimator or reward-model training.
-
-The M0 schema uses single-action contextual bandits. Slates and richer candidate metadata are deferred to the slate milestone.
-
-## M1: Synthetic contextual-bandit data
-
-```python
-from opebenchlab.synthetic import SyntheticConfig, make_dataset
-
-data = make_dataset(SyntheticConfig(n_requests=1000, seed=42))
-print(data.requests[0])
-print(data.events[0])
-```
-
-`SyntheticWorld` holds the hidden click mechanism; `generate_requests` creates
-pre-action features; `log_interactions` samples actions and clicks while recording
-exact action propensities. `oracle_policy_value` computes the exact **conditional**
-expected policy reward over the generated request set, not the population value.
-Keep oracle outputs out of estimators and training. This milestone supports
-single-item actions only; top-K slates arrive later.
-
-## M6.0: Unified reproducibility wrapper
-
-Use `python -m opebenchlab.m60_benchmark list` to see supported modern slate
-benchmarks. Run one with `python -m opebenchlab.m60_benchmark run m512-support
---output-dir reports/m60_example --trials 1 --requests 500 --explorations 0.2
---ridges 0.1`. This leaves the original estimator code unchanged and writes a
-provenance manifest alongside the original CSVs. See
-[the M6.0 reproducibility guide](docs/m60_reproducibility.md) for the full
-benchmark command, optional plotting, and interpretation caveats.
-
-### M6.1: Offline reporting and uncertainty audit
-
-After running `m60_benchmark run m512-support`, generate verified coverage and
-paired-bootstrap summaries without rerunning the experiment:
+List and run a small modern benchmark:
 
 ```bash
-python -m opebenchlab.m61_report --input-dir reports/m60_support \
-  --output-dir reports/m61_support --bootstrap 2000 --seed 42
+python -m opebenchlab.m60_benchmark list
+python -m opebenchlab.m60_benchmark run m512-support \
+  --output-dir reports/m60_example --trials 1 --requests 500 \
+  --explorations 0.2 --ridges 0.1
 ```
 
-See [M6.1 reporting protocol](docs/m61_reporting.md) for interpretation and limitations.
+Inspect additional reproducibility and figure commands:
 
-### M6.2 staged robustness protocol
+```bash
+python -m opebenchlab.m62_robustness --help
+python -m opebenchlab.m65_calibration --help
+python -m opebenchlab.m72_validation --help
+python -m opebenchlab.m73_manuscript --help
+```
 
-Run `python -m opebenchlab.m62_robustness --help` and see
-[`docs/m62_robustness.md`](docs/m62_robustness.md) for the predefined replication,
-support, and additive-negative-control suites. Interval calibration and a truly
-misspecified interaction mechanism are explicitly deferred rather than inferred
-from unsupported output fields.
+The M7.1 and M7.3 scripts generate research figures and SHA-256 manifests from archived experiment outputs. **Those original experiment CSV archives and rendered PNGs are not included in the Git source archive.** This README therefore does not embed missing images or imply that source checkout alone reproduces the historical figures. See [figure provenance](docs/m71_figures.md), [research reproducibility](docs/m70_reproducibility.md), and the [release checklist](docs/m81_release_checklist.md).
 
-### M6.3 contextual DR diagnostic decomposition
+## Repository Structure
 
-Use `python -m opebenchlab.m63_diagnostics --help` to run a paired additive vs.
-contextual-interaction analysis of direct-model error, importance-weighted
-correction, their cross term, and target/logged prediction error. See
-[`docs/m63_diagnostics.md`](docs/m63_diagnostics.md) for interpretation limits.
+```text
+OPEBenchLab/
+├── docs/                # protocols, evidence, research draft, statistical audit
+├── experiments/         # experiment helpers
+├── src/opebenchlab/     # simulator, estimators, benchmark and analysis CLIs
+├── tests/               # unit and regression tests
+├── pyproject.toml       # Python package metadata
+├── CHANGELOG.md         # release history
+└── README.md
+```
 
-### M6.4 — Observable model-risk diagnostics
+Generated `reports/` directories contain experiment results and are not part of the committed source archive.
 
-Run `python -m opebenchlab.m64_risk --output-dir reports/m64_risk` to audit observable target-distribution warning signals against oracle-only DR errors. See [M6.4 protocol](docs/m64_risk.md). This is a retrospective diagnostic study, not a calibrated deployment alarm.
+## Experimental Discipline
 
-### M6.5 — held-out risk warning calibration
+- Keep oracle reward and policy-value information outside estimator fitting and warning decisions.
+- Separate calibration from held-out evaluation; preserve paired trials and seed-level dependence.
+- Report SNIPS finite-estimate coverage alongside conditional error.
+- Distinguish retrospective oracle-labeled diagnostics from deployable warning rules.
+- Record negative results, protocol qualifications, and provenance instead of silently discarding them.
 
-Use `python -m opebenchlab.m65_calibration --output-dir reports/m65_calibration`.
-The protocol, frozen rules, held-out trial decisions and cluster-bootstrap summaries
-are documented in `docs/m65_calibration.md`.
+## Limitations
 
-### M7.0 — Research synthesis
+- All main experiments use controlled synthetic environments from one simulator family, not production randomized recommendation logs.
+- Exact-slate support can be extremely sparse; conditional SNIPS RMSE and always-defined DR RMSE answer different coverage questions.
+- The 36 M7.2 paired intervals are unadjusted for multiple comparisons and are exploratory.
+- M7.2 bootstrap intervals condition on fixed alert selections; pooled cross-configuration uncertainty does not account for shared seeds.
+- Warning high-error labels require simulator truth, unavailable in ordinary deployment.
+- Archived experiment CSVs must be distributed separately for independent numerical reproduction.
 
-See [research draft](docs/m70_research_draft.md), [numerical evidence ledger](docs/m70_evidence.md), and [reproducibility/audit guide](docs/m70_reproducibility.md). The synthesis distinguishes directly checked M6.3–M6.5 outputs from earlier milestone summaries that still require archived outputs for a full independent audit.
+These constraints limit external validity and inferential strength; they do not prevent a reproducible **research software** release.
 
-### M7.1 — Audited publication figures
+## What the Experiments Suggest
 
-The recovered M6.1–M6.2 archives close the evidence gap noted in M7.0. See [M7.1 figures and provenance](docs/m71_figures.md). After extracting the experiment archive into `reports/`, install `matplotlib` and run `python -m opebenchlab.m71_figures --reports-dir reports --output-dir reports/m71_figures` to generate four figures plus a SHA-256 source manifest.
+The current evidence supports a conditional, rather than universal, view of estimator reliability:
 
-### M7.2 — Paired statistical validation of held-out warnings
+- **overlap** determines whether importance-weighted estimates are even defined and how noisy they become;
+- **target-policy generalization** matters more than logged-data fit alone;
+- **reward structure** changes which estimators and warning signals appear effective.
 
-Run `python -m opebenchlab.m72_validation --input-dir reports/m65_calibration --output-dir reports/m72_validation` for frozen-threshold versus matched-alert-budget warning comparisons and paired seed-cluster intervals. See [M7.2 protocol](docs/m72_validation.md). Increase independent replication by rerunning M6.5 with additional disjoint seeds first.
+## Future Research
 
-### M7.3 — Manuscript statistical reporting
+Potential follow-up studies — **not** unfinished requirements for v1.0.0 — include re-ranked seed-cluster bootstrap inference, joint-seed pooled intervals, multiplicity-aware testing, new reward and logging mechanisms, and evaluation on real randomized logs.
 
-See [statistical reporting appendix](docs/m73_statistical_reporting.md). Run `python -m opebenchlab.m73_manuscript --input-dir reports/m72_extended --output-dir reports/m73_manuscript` to reproduce the mechanism-reversal figure, pooled-count table and SHA-256 evidence manifest.
+## Milestones
+
+| Milestone | Deliverable |
+|---|---|
+| M0–M5 | Contextual-bandit and ordered-slate OPE framework |
+| M6 | Reproducible robustness, diagnostics, and warning calibration |
+| M7 | Evidence synthesis, figures, held-out validation, manuscript reporting |
+| M8.0–M8.1 | Independent audit and v1.0.0 research-software release |
+
+## Current Conclusion
+
+OPEBenchLab asks:
+
+> When can off-policy estimates of recommendation slates be trusted?
+
+The controlled experiments suggest:
+
+> **Not on estimator sophistication or logged-data fit alone.**
+
+Support, target-policy generalization, and reward structure jointly determine which methods behave well. Simpler estimators can outperform more elaborate ones under sparse support, and warning signals can reverse their apparent usefulness across mechanisms. These are bounded synthetic findings, with statistical limitations explicitly documented rather than hidden.
